@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test</title>
+    <style>
+        .gui_panel {
+            border: 1px solid #333;
+            box-shadow: 8px 8px 5px #444;
+            padding: 8px 12px;
+            background-image: linear-gradient(180deg, #fff, #ddd 40%, #ccc);
+        }
+
+        #canvas {
+            margin-left: auto;
+            margin-right: auto;
+            width: 98vw;
+            height: 70vh;
+            display: block;
+            border: 4px solid #222eb5;
+            background-image: linear-gradient(180deg, #000000, #0e0909 40%, #271f1f);
+        }
+
+        .off {
+            background-color: black;
+        }
+        .column {
+            float: left;
+            width: 27%;
+            padding-left: 3%;
+            padding-right: 3%;
+        }
+
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for msg in messages %}
+    <p class="info">{{ msg }}</p>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+</body>
+</html>

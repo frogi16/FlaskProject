@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="wrapper" style="overflow: hidden;">
+    <div class="content gui_panel" style="float: left;max-width:60vw;margin-right: 5vw;">
+        <p class="title">Add object</p>
+        <form action="" method="post">
+            <p class="label">
+                {{ form.name.label }} <br>
+                {{ form.name(size=30, class_="form-field")}} <br>
+            </p>
+            <div class="row">
+                <div class="label column">
+                    {{ form.orbits.label }} <br>
+                    {{ form.orbits(size=10, class_="form-field")}} <br>
+                </div>
+                <div class="label column">
+                    {{ form.labels.label }} <br>
+                    <i>"Body" is automatically added to every object</i><br />
+                    {{ form.labels(size=10, class_="form-field")}} <br>
+                </div>
+                <div class="label column">
+                    {{ form.custom_labels.label }} <br>
+                    <i>Input phrases delimited with commas, spaces will be automatically replaced with underscores.</i><br />
+                    <i>Use only english characters, because otherwise visualisation library breaks and always selects all nodes when changing colors.</i>
+                    {{ form.custom_labels(size=30, class_="form-field")}} <br>
+                </div>
+            </div>
+            <p class="submit" style="float:right">{{ form.submit(class_="form-button") }}</p>
+        </form>
+    </div>
+    <div class="gui_panel" style="overflow: hidden; max-width: 30vw;">
+        <p class="change_color_label">
+            {{ change_color_form.color_labels.label }} <br>
+            {{ change_color_form.color_labels(size=10, class_="form-field")}} <br>
+        </p>
+        <input type="color" id="color_picker" name="color_picker" value="#e66465">
+        <label for="color_picker">Set color for label</label>
+        <br />
+        <br />
+        <input class="button"
+               type="button"
+               id="set_color_button"
+               value="Set">
+    </div>
+</div>
+<div id="canvas">
+</div>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.20.0/cytoscape.min.js"></script>
+<script type="text/javascript">
+    var bodies_data = JSON.parse('{{ bodies_data | tojson | safe}}');
+    var relations_data = JSON.parse('{{ relations_data | tojson | safe}}');
+
+    var cy = cytoscape({
+        container: document.getElementById("canvas"), // container to render in
+
+        elements: bodies_data.concat(relations_data),
+
+        style: [
+            // the stylesheet for the graph
+            {
+                selector: "node",
+                style: {
+                    "background-color": "hotpink",
+                    "text-outline-color": "#000",
+                    "color": "white",
+                    label: "data(id)"
+                }
+            },
+
+            {
+                selector: "edge",
+                style: {
+                    width: 3,
+                    "line-color": "#ccc",
+                    "target-arrow-color": "#ccc",
+                    "target-arrow-shape": "triangle"
+                }
+            }
+        ],
+
+        layout: {
+            name: 'breadthfirst',
+            circle: true,
+            root: 'S\u0142o\u0144ce',
+        }
+    });
+
+    cy.animate(
+        {
+            fit: true,
+            center: true,
+            easing: "ease-in-circ"
+        },
+        {
+            duration: 750
+        }
+    );
+
+    document.getElementById("set_color_button").onclick = function ()
+    {
+        var label_elem = document.getElementById("color_labels");
+        var label = label_elem.options[label_elem.selectedIndex].value;
+        if (!label)
+            return;
+
+        var sel = `[${label}]`;
+        cy.style()
+            .selector(sel)
+            .style({
+                "background-color": document.getElementById("color_picker").value
+            }).update();
+    };
+</script>
+
+{% endblock %}

@@ -1,0 +1,181 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test</title>
+    <link rel="stylesheet" href="treant-js-master/Treant.css" type="text/css" />
+	<style>
+	#canvas {
+  width: 90vw;
+  height: 70vh;
+  display: block;
+}
+
+.off {
+  background-color: black;
+}
+	</style>
+</head>
+<body>
+    <script src="treant-js-master/vendor/raphael.js"></script>
+    <script src="treant-js-master/Treant.js"></script>
+
+    
+    
+    
+
+    
+<div class="content">
+    <p class="title">Add object</p>
+    <form action="" method="post">
+        <p class="label">
+            <label for="name">Object name</label> <br>
+            <input class="form-field" id="name" name="name" size="30" type="text" value=""> <br>
+        </p>
+        <p class="label">
+            <label for="orbits">Orbits</label> <br>
+            <select class="form-field" id="orbits" name="orbits" size="10"><option value="Słońce">Słońce</option><option value="Ziemia">Ziemia</option><option value="Merkury">Merkury</option><option value="Wenus">Wenus</option><option value="Mars">Mars</option><option value="Jowisz">Jowisz</option><option value="Saturn">Saturn</option><option value="Uran">Uran</option></select> <br>
+        </p>
+        <p class="label">
+            <label for="labels">Labels already in database (Body is added to every object)</label> <br>
+            <select class="form-field" id="labels" multiple name="labels" size="10"><option value="Body">Body</option><option value="Gwiazda">Gwiazda</option><option value="Planeta">Planeta</option><option value="Gazowy gigant">Gazowy gigant</option></select> <br>
+        </p>
+        <p class="label">
+            <label for="custom_labels">Custom labels (delimited with commas)</label> <br>
+            <input class="form-field" id="custom_labels" name="custom_labels" size="30" type="text" value=""> <br>
+        </p>
+        <p class="submit"><input class="form-button" id="submit" name="submit" type="submit" value="Add"></p>
+    </form>
+</div>
+<div id="canvas">
+</div>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/graphdracula/1.0.3/dracula.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.3.0/raphael.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.20.0/cytoscape.min.js"></script>
+<script type="text/javascript">
+        var bodies_data = JSON.parse('[{"name": "Ziemia", "parent": "Se"}, {"name": "Merkury", "parent": "Se"}]');
+    //    var test = true;
+    //    var config = {
+    //        container: "#collapsable-example",
+
+    //        animateOnInit: true,
+
+    //        node: {
+    //            collapsable: true
+    //        },
+    //        animation: {
+    //            nodeAnimation: "easeOutBounce",
+    //            nodeSpeed: 700,
+    //            connectorsAnimation: "bounce",
+    //            connectorsSpeed: 700
+    //        }
+    //    };
+    //var chart_config = [config].concat(bodies_data);
+    //console.log(chart_config)
+
+    var cy = cytoscape({
+  container: document.getElementById("canvas"), // container to render in
+
+  elements: [
+    // list of graph elements to start with
+    {
+      // node a
+      data: { id: "a" }
+    },
+    {
+      // node b
+      data: { id: "b" }
+    },
+    {
+      // edge ab
+      data: { id: "ab", source: "a", target: "b" }
+    }
+  ],
+
+  style: [
+    // the stylesheet for the graph
+    {
+      selector: "node",
+      style: {
+        "background-color": "#666",
+        label: "data(id)"
+      }
+    },
+
+    {
+      selector: "edge",
+      style: {
+        width: 3,
+        "line-color": "#ccc",
+        "target-arrow-color": "#ccc",
+        "target-arrow-shape": "triangle",
+        label: "data(id)"
+      }
+    }
+  ],
+
+  layout: {
+    name: "grid",
+    rows: 1
+  }
+});
+
+var eles = cy.add([
+  { group: "nodes", data: { id: "n0" }, position: { x: 100, y: 100 } },
+  { group: "nodes", data: { id: "n1" }, position: { x: 200, y: 200 } },
+  { group: "edges", data: { id: "e0", source: "n0", target: "n1" } },
+  { group: "edges", data: { id: "n1a", source: "n1", target: "a" } },
+  { group: "edges", data: { id: "n0a", source: "n0", target: "a" } },
+  { group: "edges", data: { id: "n0b", source: "n0", target: "b" } },
+  { group: "edges", data: { id: "n1b", source: "n1", target: "b" } }
+]);
+
+cy.zoom({
+  level: 5 // the zoom level
+  // position: { x: 0, y: 0 }
+});
+// cy.center();
+// cy.fit();
+cy.animate(
+  {
+    fit: true,
+    center: true,
+    easing: "ease-in-circ"
+  },
+  {
+    duration: 750
+  }
+);
+
+cy.style()
+  .selector("node")
+  .style({
+    "background-color": "hotpink"
+  })
+
+  .update(); // update the elements in the graph with the new style
+  
+let removed = [];
+
+cy.on("tap", "node", function(evt) {
+  const node = evt.target;
+  const color =
+    node.style().backgroundColor === "hotpink" ? "black" : "hotpink";
+
+  node.animate(
+    {
+      style: {
+        backgroundColor: color
+      }
+    },
+    {
+      duration: 750
+    }
+  );
+  console.log(`style`, node.style(), node.selectable());
+});
+</script>
+
+</body>
+</html>
